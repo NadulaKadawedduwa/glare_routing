@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Leaflet Shade Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    #mapid {
+      height: 100vh; /* Full height so you can see the map */
+    }
+  </style>
+</head>
+<body>
+  <div id="mapid"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-shadow-simulator/dist/leaflet-shadow-simulator.umd.min.js"></script>
+  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+  <script>
+    var map = L.map("mapid").setView([47.69682, -121.92078], 15); // Example: center on San Francisco
+
+    const shadeMap = L.shadeMap({
+      date: new Date(),
+      color: '#91112f',
+      opacity: 0.7,
+      apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5hZHVsYWthZGF3ZWRkdXdhQGdtYWlsLmNvbSIsImNyZWF0ZWQiOjE3NDUzMzEyMjUxOTksImlhdCI6MTc0NTMzMTIyNX0.RAJ-qHAKLvC3v9gb-5RMIXp2BdrqfsmcxfElBHIb_S", // Replace with your actual API key
+      terrainSource: {
+        tileSize: 256,
+        maxZoom: 15,
+        getSourceUrl: ({ x, y, z }) => {
+          return `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`;
+        },
+        getElevation: ({ r, g, b, a }) => {
+          return (r * 256 + g + b / 256) - 32768;
+        }
+      },
+    }).addTo(map);
+
+    // Advance shade by 1 hour
+    shadeMap.setDate(new Date(1633358583454));
+
+    // shadeMap.setDate(new Date(Date.now() + 1000 * 60 * 60));
+
+    // Optional: remove shade after some time (e.g., 5 seconds)
+    // setTimeout(() => shadeMap.remove(), 5000);
+  </script>
+</body>
+</html>
